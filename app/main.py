@@ -114,7 +114,7 @@ def search_plushies(
 #database pagination function
 @app.get("/plushies/")
 def get_plushies(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(models.PlushTable).order_by(models.PlushTable.id.asc().offset(skip).limit(limit).all()
+    return db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).offset(skip).limit(limit).all()
 
 #database filter function w/ pagination
 @app.get("/filter/")
