@@ -9,11 +9,18 @@ from sqlalchemy.orm import Session
 #error handling
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from pydantic import ValidationError
+
 #double check these
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
 from fastapi.exception_handlers import request_validation_exception_handler
+
+#login
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from datetime import timedelta
+from .auth import create_access_token, verify_password, get_password_hash
+
 
 
 app = FastAPI()
@@ -107,7 +114,7 @@ def search_plushies(
 #database pagination function
 @app.get("/plushies/")
 def get_plushies(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(models.PlushTable).offset(skip).limit(limit).all()
+    return db.query(models.PlushTable).order_by(models.PlushTable.id.asc().offset(skip).limit(limit).all()
 
 #database filter function w/ pagination
 @app.get("/filter/")
@@ -180,4 +187,32 @@ async def handle_sqlalchemy_error(request: Request, exc: SQLAlchemyError):
         content={"message": "Database error", "detail": str(exc)}
     )
 
+#login
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "token")
+
+#register user
+@app.post("/register")
+def register(form_data:OAuth2PasswordRequestForm = Depends(), db:Session = Depends(get_db)):
+    existing_user = db.query(models.User).filter(models.User.username == form_data.username).first()
+    if existing_user:
+        raise HTTPException(status_code = 400, detail = "Username already registered.")
+    hashed_pw = get_password_hash(form_data.password)
+    new_user = models.User(username = form_data.username, hashed_password = hashed_pw)
+    db.add(new_user)
+    db.commit()
+    return{
+        "msg": "User registered successfully!"
+    }
+
+#user login
+@app.post("/token")
+def login(form_data:OAuth2PasswordRequestForm = Depends(), db:Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.username == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code = 401, detail = "Invalid username or password")
+    access_token = create_access_token(
+        data={"sub":user.username},
+        expires_delta = timedelta(minutes = 60)
+    )
+    return{"access_token": access_token,"token_type": "bearer"}
 
