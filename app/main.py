@@ -50,8 +50,9 @@ db_dependency = Annotated[Session, Depends(get_db)]
 #returns entire database
 @app.get("/plushies/all")
 def get_all_plushies(db: Session = Depends(get_db)):
-    plushies = db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).all()
-    return JSONResponse(content=jsonable_encoder(plushies), indent=4)
+    jsonableplush = db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).all()
+    encoded = jsonable_encoder(jsonableplush)
+    return JSONResponse(content=encoded, indent=4)
 
 @app.get("/plushies/{plush_id}")
 async def get_plush(plush_id: int, db: db_dependency):
@@ -117,8 +118,9 @@ def search_plushies(
 #database pagination function
 @app.get("/plushies/")
 def get_plushies(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    plushies = db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).offset(skip).limit(limit).all()
-    return JSONResponse(content=jsonable_encoder(plushies), indent=4)
+    jsonableplush = db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).offset(skip).limit(limit).all()
+    encoded = jsonable_encoder(jsonableplush)
+    return JSONResponse(content=encoded, indent=4)
 
 #database filter function w/ pagination
 @app.get("/filter/")
