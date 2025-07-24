@@ -5,8 +5,9 @@ import app.models as models
 import math
 from app.database import engine, SessionLocal
 from sqlalchemy.orm import Session
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.encoders import jsonable_encoder
+import json
 
 #error handling
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
@@ -52,7 +53,8 @@ db_dependency = Annotated[Session, Depends(get_db)]
 def get_all_plushies(db: Session = Depends(get_db)):
     jsonableplush = db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).all()
     encoded = jsonable_encoder(jsonableplush)
-    return JSONResponse(content=encoded, indent=4)
+    pretty_json = json.dumps(encoded, indent=4)
+    return Response(content=pretty_json, media_type="application/json")
 
 @app.get("/plushies/{plush_id}")
 async def get_plush(plush_id: int, db: db_dependency):
@@ -120,7 +122,8 @@ def search_plushies(
 def get_plushies(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     jsonableplush = db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).offset(skip).limit(limit).all()
     encoded = jsonable_encoder(jsonableplush)
-    return JSONResponse(content=encoded, indent=4)
+    pretty_json = json.dumps(encoded, indent=4)
+    return Response(content=pretty_json, media_type="application/json")
 
 #database filter function w/ pagination
 @app.get("/filter/")
