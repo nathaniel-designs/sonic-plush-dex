@@ -48,7 +48,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 #returns entire database
 @app.get("/plushies/all")
 def get_all_plushies(db: Session = Depends(get_db)):
-    return db.query(models.PlushTable).all()
+    return db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).all()
 
 @app.get("/plushies/{plush_id}")
 async def get_plush(plush_id: int, db: db_dependency):
