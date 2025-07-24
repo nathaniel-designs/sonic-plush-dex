@@ -5,7 +5,8 @@ import app.models as models
 import math
 from app.database import engine, SessionLocal
 from sqlalchemy.orm import Session
-from fastapi.encoders import JSONResponse, jsonable_encoder
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 
 #error handling
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
