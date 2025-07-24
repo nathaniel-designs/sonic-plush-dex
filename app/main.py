@@ -1,10 +1,11 @@
-from fastapi import FastAPI, HTTPException, Depends, Query, JSONResponse, jsonable_encoder
+from fastapi import FastAPI, HTTPException, Depends, Query
 from pydantic import BaseModel
 from typing import List, Annotated, Optional
 import app.models as models
 import math
 from app.database import engine, SessionLocal
 from sqlalchemy.orm import Session
+from fastapi.encoders import JSONResponse, jsonable_encoder
 
 #error handling
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
