@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi import FastAPI, HTTPException, Depends, Query, JSONResponse, jsonable_encoder
 from pydantic import BaseModel
 from typing import List, Annotated, Optional
 import app.models as models
@@ -48,7 +48,8 @@ db_dependency = Annotated[Session, Depends(get_db)]
 #returns entire database
 @app.get("/plushies/all")
 def get_all_plushies(db: Session = Depends(get_db)):
-    return db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).all()
+    plushies = db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).all()
+    return JSONResponse(content=jsonable_encoder(plushies), indent=4)
 
 @app.get("/plushies/{plush_id}")
 async def get_plush(plush_id: int, db: db_dependency):
@@ -114,7 +115,8 @@ def search_plushies(
 #database pagination function
 @app.get("/plushies/")
 def get_plushies(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).offset(skip).limit(limit).all()
+    plushies = db.query(models.PlushTable).order_by(models.PlushTable.id.asc()).offset(skip).limit(limit).all()
+    return JSONResponse(content=jsonable_encoder(plushies), indent=4)
 
 #database filter function w/ pagination
 @app.get("/filter/")
