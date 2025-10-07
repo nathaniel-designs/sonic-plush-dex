@@ -13,14 +13,14 @@ plushies.json
 
 #Docker ignore stuff.
 
-# Byte-compiled / optimized / DLL files
+#Byte-compiled/optimized/DLL files
 *.py[cod]
 *$py.class
 
 # C extensions
 *.so
 
-# Distribution / packaging
+#Distribution/packaging
 .Python
 build/
 develop-eggs/
@@ -40,7 +40,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Unit test / coverage reports
+#Unit test/coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -55,10 +55,10 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+#PEP 582
 __pypackages__/
 
-# Environments
+#Environments
 .venv
 env/
 env.bak/
